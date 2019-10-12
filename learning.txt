@@ -1,0 +1,286 @@
+GO语言的基础组成部分
+	1、包声明
+    	package main
+	2、引入包
+    	import "fmt"
+	3、函数、变量、语言&表达式、注释
+	func main() {
+    	/* 这是我的第一个简单的程序 */
+    	fmt.Println("Hello, World!")
+	}
+
+
+数据类型：布尔型、int、float、指针、数组、结构化（struct）、Channel（管道）、函数、切片、接口、Map
+
+变量 var identifier type 
+	例如：var A int
+
+	第一种，指定变量类型，如果没有初始化，则变量默认为零值。
+		var b int
+		fmt.Println(b)	打印出来等于0 
+		*bool 零值为 false
+
+	第二种，根据值自行判定变量类型。
+		var d = true //d将被判断为Boolen
+
+	第三种，省略 var, 注意 := 左侧如果没有声明新的变量，就产生编译错误，格式：
+
+		//这种不带声明格式的只能在函数体中出现
+
+		：= 是一个声明语句//左侧必须要有新变量名
+		可以将 var f string = "Runoob" 简写为 f := "Runoob"	
+
+	多变量声明
+		var vname1, vname2, vname3 type
+		vname1, vname2, vname3 = v1, v2, v3
+		var vname1, vname2, vname3 = v1, v2, v3
+		vname1, vname2, vname3 := v1, v2, v3
+		var (  // 这种因式分解关键字的写法一般用于声明全局变量
+		    vname1 v_type1
+		    vname2 v_type2
+		)
+
+	值类型和引用类型
+		所有像 int、float、bool 和 string 这些基本类型都属于值类型，使用这些类型的变量直接指向存在内存中的值
+		当使用等号 = 将一个变量的值赋值给另一个变量时，如：j = i，实际上是在内存中将 i 的值进行了拷贝
+		你可以通过 &i 来获取变量 i 的内存地址
+		这个内存地址为称之为指针
+
+		全局变量是允许声明但不使用。 同一类型的多个变量可以声明在同一行
+		如果你想要交换两个变量的值，则可以简单地使用 a, b = b, a，两个变量的类型必须是相同
+
+		=是赋值 ：=是声明
+
+		空白标识符 _ 也被用于抛弃值，如值 5 在：_, b = 5, 7 中被抛弃
+		_ 实际上是一个只写变量
+
+	变量作用域：
+		函数内定义的变量称为局部变量
+		函数外定义的变量称为全局变量
+			全局变量与局部变量名称可以相同，但是函数内的局部变量会被优先考虑
+		函数定义中的变量称为形式参数
+
+
+
+常量 const identifier [type] = value
+	常量是一个简单值的标识符，在程序运行时，不会被修改的量
+	常量中的数据类型只可以是布尔型、数字型（整数型、浮点型和复数）和字符串型
+
+	显式类型定义： const b string = "abc"
+	隐式类型定义： const b = "abc"
+	const c_name1, c_name2 = value1, value2
+	const ( 
+   		Unknown = 0
+    	Female = 1
+    	Male = 2
+	)
+
+
+	iota 特殊常量，可以认为是一个可以被编译器修改的常量
+	iota 在 const关键字出现时将被重置为 0(const 内部的第一行之前)，const 中每新增一行常量声明将使 iota 计数一次(iota 可理解为 const 语句块中的行索引)。
+	const ( //第一个 iota 等于 0，每当 iota 在新的一行被使用时，它的值都会自动加 1；所以 a=0, b=1, c=2 
+	    a = iota
+	    b = iota
+	    c = iota
+	)
+	const ( // a=0, b=1, c=2 
+	    a = iota
+	    b
+	    c
+	    //由上个式子简化过来 由此可以推断，在const中，a=xx后下一行只有一个常量b 那b就等于xx
+	)
+
+ 
+数组 var variable_name [SIZE] variable_type
+	var balance [10] float32 ==== 数组 balance 长度为 10 类型为 float32
+	初始化数组:
+		var balance = [5]float32{1000.0, 2.0, 3.4, 7.0, 50.0}
+		var balance = [...]float32{1000.0, 2.0, 3.4, 7.0, 50.0}
+	访问数组元素:
+		balance[4] = 50.0
+	Go 语言支持多维数组
+		var arrayName [ x ][ y ] variable_type
+	向函数传递数组
+		void myFunction(param [10]int){...}
+		void myFunction(param []int){...}
+
+指针 
+	一个指针变量指向了一个值的内存地址
+	类似于变量和常量，在使用指针前你需要声明指针
+		var var_name *var-type
+			var-type 为指针类型
+			var_name 为指针变量名
+			* 号用于指定变量是作为一个指针
+
+	指针使用流程：
+		定义指针变量
+		为指针变量赋值
+			Go 语言的取地址符是 &，放到一个变量前使用就会返回相应变量的内存地址
+		访问指针变量中指向地址的值
+
+		在指针类型前面加上 * 号（前缀）来获取指针所指向的内容
+
+	空指针
+		当一个指针被定义后没有分配到任何变量时，它的值为 nil
+		nil 指针也称为空指针
+
+		if(ptr != nil)     /* ptr 不是空指针 */
+		if(ptr == nil)    /* ptr 是空指针 */
+
+	
+
+	数组中使用指针
+		我们可能需要保存数组，这样我们就需要使用到指针
+
+	指向指针的指针
+		var ptr **int;
+
+	语言指针作为函数参数
+		Go 语言允许向函数传递指针，只需要在函数定义的参数上设置为指针类型即可。
+		如何向函数传递指针，并在函数调用后修改函数内的值
+
+结构体
+	结构体是由一系列具有相同类型或不同类型的数据构成的数据集合
+	type struct_variable_type struct {
+	   member definition;
+	   member definition;
+	   ...
+	   member definition;
+	}
+	如果要访问结构体成员，需要使用点号 . 操作符
+	数据类型一样将结构体类型作为参数传递给函数
+
+	结构体指针
+
+运算符 
+	算术运算符：
+		+、-、*、/、%、++、--、
+	关系运算符：
+		==、！=、>、<、>=、<=
+	逻辑运算符：
+		&&(and) ||(OR)  !(NOT)
+	位运算符：
+		&按位与 、 |按位或 、 ^按位异 、左移运算符"<<" 、右移运算符">>"
+	赋值运算符：
+		=	简单的赋值运算符，将一个表达式的值赋给一个左值	C = A + B 将 A + B 表达式结果赋值给 C
+		+=	相加后再赋值	C += A 等于 C = C + A
+		-=	相减后再赋值	C -= A 等于 C = C - A
+		*=	相乘后再赋值	C *= A 等于 C = C * A
+		/=	相除后再赋值	C /= A 等于 C = C / A
+		%=	求余后再赋值	C %= A 等于 C = C % A
+		<<=	左移后赋值	C <<= 2 等于 C = C << 2
+		>>=	右移后赋值	C >>= 2 等于 C = C >> 2
+		&=	按位与后赋值	C &= 2 等于 C = C & 2
+		^=	按位异或后赋值	C ^= 2 等于 C = C ^ 2
+		|=	按位或后赋值	C |= 2 等于 C = C | 2
+	其他运算符：
+		&	返回变量存储地址	&a; 将给出变量的实际地址。
+		*	指针变量。	*a; 是一个指针变量
+
+	运算符优先级
+		5	* / % << >> & &^
+		4	+ - | ^
+		3	== != < <= > >=
+		2	&&
+		1	||
+
+
+条件 语句
+	if 布尔表达式 { //	if
+   		/* 在布尔表达式为 true 时执行 */
+	}
+
+	if 布尔表达式 { //	if else
+	   /* 在布尔表达式为 true 时执行 */
+	} else {
+	  /* 在布尔表达式为 false 时执行 */
+	}
+
+	if 布尔表达式 1 {
+	   /* 在布尔表达式 1 为 true 时执行 */
+	   if 布尔表达式 2 {
+	      /* 在布尔表达式 2 为 true 时执行 */
+	   }
+	}
+
+	switch var1 { //普通switch
+	    case val1:
+	        ...
+	    case val2:
+	        ...
+	    default:
+	        ...
+	}
+
+	switch x.(type){ // type switch
+	    case type:
+	       statement(s);      
+	    case type:
+	       statement(s); 
+	    /* 你可以定义任意个数的case */
+	    default: /* 可选 */
+	       statement(s);
+	}
+
+	fallthrough
+	使用 fallthrough 会强制执行后面的 case 语句，fallthrough 不会判断下一条 case 的表达式结果是否为 true
+
+	select { //随机执行一个可运行的 case。如果没有 case 可运行，它将阻塞，直到有 case 可运行
+ 	   case communication clause  :
+ 	      statement(s);      
+ 	   case communication clause  :
+ 	      statement(s); 
+	    /* 你可以定义任意数量的 case */
+	    default : /* 可选 */
+	       statement(s);
+	}
+
+循环 语句
+	for init; condition; post { }
+		init： 一般为赋值表达式，给控制变量赋初值；
+		condition： 关系表达式或逻辑表达式，循环控制条件；
+		post： 一般为赋值表达式，给控制变量增量或减量。
+	
+	for a := 0; a < 10; a++ {
+        fmt.Printf("a 的值为: %d\n", a)
+    }
+
+
+	for condition { }
+
+	for { }
+
+	for i=2; i < 100; i++ {
+      for j=2; j <= (i/j); j++ {
+         if(i%j==0) {
+            break; 
+         }
+      }
+
+函数 
+	最少有个 main() 函数
+	函数声明告诉了编译器函数的名称，返回类型，和参数
+		声明格式：
+		func function_name( [parameter list] ) [return_types] {
+		   函数体
+		}
+		func：函数由 func 开始声明
+		function_name：函数名称，函数名和参数列表一起构成了函数签名
+		parameter list：参数列表
+		return_types：返回类型
+	函数调用：
+		当创建函数时，你定义了函数需要做什么，通过调用该函数来执行指定任务
+	函数返回多个值：
+		在return_types：返回类型中定义多值就行
+
+
+切片
+	Go 语言切片是对数组的抽象
+	定义切片：
+		你可以声明一个未指定大小的数组来定义切片：var identifier []type
+		或使用make()函数来创建切片:var slice1 []type = make([]type, len)
+			slice1 := make([]type, len)
+			make([]T, length, capacity)
+			这里 len 是数组的长度并且也是切片的初始长度。
+
+	
