@@ -273,6 +273,14 @@ GO语言的基础组成部分
 	函数返回多个值：
 		在return_types：返回类型中定义多值就行
 
+	函数参数实例
+
+		当使用通道作为函数参数时
+		[parameter list] 
+			实例 实例类型 参数类型
+			c chan bool
+
+
 
 切片
 	参考https://www.cnblogs.com/vinsent/p/11326417.html
@@ -391,6 +399,30 @@ Map(集合)
    	/* 方法实现*/
 	}
 
+	接口详解：
+		依赖于结构体
+		首先要定义接口
+			type interface_name interface{
+				method_name1 [return_type]
+ 	  			method_name2 [return_type]
+			}
+
+			定义结构体 struct 
+			type strcut_name strcut{
+				/* variables */结构体内容
+			}
+
+			定义method 方法(func 定义）
+			func (struct_name_variable struct_name) method_name1 [return type] {
+				/* 方法实现*/
+			}
+
+		接口可以复用，只要能使用接口中的方法 就可以复用
+
+
+
+
+
 
 
 
@@ -409,3 +441,86 @@ Map(集合)
     	}
     // 实现
 	}
+
+
+
+
+goroutine并发
+	轻量级执行线程
+	在代码中 用go来开启goroutine
+
+	go func_name(params)
+
+	go 支持并发，但是并发时，两个线程之间的通信只能通过管道来实现通信，同时进行控制
+
+
+channel 通道
+	用来传递数据的一个数据结构
+
+	//通道是连接并发goroutine的管道
+
+	通道可用于两个 goroutine 之间通过传递一个指定类型的值来同步运行和通讯
+	操作符 <- 用于指定通道的方向，发送或接收。如果未指定方向，则为双向通道
+
+	首先先声明一个通道（关键字chan）
+	ch := make(chan int)
+
+	ch <- v // 把 v 发送到通道 ch
+	v := <-ch  // 从 ch 接收数据 并把值赋给 v
+
+	这种情况下通道是没有缓存的，发送端发送数据，同时必须又接收端相应的接收数据
+
+	通道可以有缓存区
+		在声明通道的同时
+		ch := make(chan int,100)
+		带缓冲区的通道允许发送端的数据发送和接收端的数据获取处于异步状态
+		就是说发送端发送的数据可以放在缓冲区里面，可以等待接收端去获取数据，而不是立刻需要接收端去获取数据
+
+		不过由于缓冲区的大小是有限的，所以还是必须有接收端来接收数据的，否则缓冲区一满，数据发送端就无法再发送数据了
+
+		如果通道不带缓冲，发送方会阻塞直到接收方从通道中接收了值。如果通道带缓冲，发送方则会阻塞直到发送的值被拷贝到缓冲区内；如果缓冲区已满，则意味着需要等待直到某个接收方获取到一个值。接收方在有值可以接收之前会一直阻塞
+
+	通道实例
+		a := make(chan int) 定义
+		a <- v 把 v 发送到通道 a
+		v := <-a  // 从 a 接收数据 并把值赋给 v
+		控制通道的只有一个 <- 通过通道在左在右控制是给值还是接受值
+
+		带缓存的通道
+		a := make(chan int, 2)
+
+		同步通道===等待通道阻塞   实现同步
+
+			方法中使用一个chan 然后发送值到chan 这chan就会阻塞，最后再接受chan 
+
+
+
+
+
+
+
+
+ 
+select 选择
+	Go语言的选择(select)可等待多个通道操作。将goroutine和channel与select结合是Go语言的一个强大功能。
+
+	select {
+		case:
+		case:
+	}
+
+
+	控制通道和返回的最佳方案是 timeout	
+
+	使用超时控制
+		select {
+			case res := -<c1 :
+				return
+			case <- time.After(time.Second *1):
+				return timeout
+		}
+
+
+
+
+
