@@ -493,6 +493,49 @@ channel 通道
 
 			方法中使用一个chan 然后发送值到chan 这chan就会阻塞，最后再接受chan 
 
+		指定通道是否仅用于发送或接收值
+
+			func ping(pings chan<- string, msg string) {
+    			pings <- msg
+			}//ping功能只接受
+
+			ping(pings, "passed message") //pings 接受了一个str下面传送到pongs
+
+			func pong(pings <-chan string, pongs chan<- string) {
+    			msg := <-pings
+			    pongs <- msg
+			}//函数接收两个channel 一个用来发送 一个用来接收 
+
+		非阻塞通道
+			可以使用select和default子句来实现非阻塞发送，接收，甚至非阻塞多路选择(select)
+
+			select {
+				case msg := <-messages:
+					fmt.Println("received message", msg)
+					//尝试接受数据
+				default:
+					fmt.Println("no message received")
+				}
+			有点打脑壳
+			因为没有缓存情况下、通道会被阻塞，要实现非阻塞的话、不给缓存，在select中直接调到default
+
+		遍历通道内的值：
+			for elem := range channel{
+				fmt.Println(elem)
+			}
+
+		通道死锁问题
+			如果你的 goroutine 要做消息的循环处理等耗时操作，可以向它们发送一条 kill 消息来关闭它们。或直接关闭一个它们都等待接收数据的 channel
+
+			// 等待所有 goroutine 执行完毕
+			// 使用传址方式为 WaitGroup 变量传参
+			// 使用 channel 关闭 goroutine
+
+
+
+
+
+
 
 
 
@@ -519,6 +562,48 @@ select 选择
 			case <- time.After(time.Second *1):
 				return timeout
 		}
+
+
+
+超时实例
+	在Go编程中由于使用了通道和选择(select),实现超时是容易和优雅的。
+	1、定义一个channel，带缓存，在并发中定义超时时间并且用channel接受并发请求
+	2、在select 中定义
+		case: <-time.After(time.second*2)//2秒
+		case: 接受并发中channel
+	可以优雅的定义超时
+
+
+
+
+定时器实例：
+	我们经常想在将来的某个时间点执行Go代码，或者在某个时间间隔重复执行。 Go的内置计时器和自动接收器功能使这两项任务变得容易
+	定时器代表未来的一个事件。可告诉定时器您想要等待多长时间，它提供了一个通道，在当将通知时执行对应程序
+	import time
+		time1 := time.NewTimer(time.Second*2)
+		<-time1.C //这个就是time的一个channel 2秒后定时处理 是一个channel
+	停止timer2.Stop()
+
+
+
+续断实例
+	定期执行、或者周期性执行
+	import time 
+		ticker := time.NewTicker(time.Second*1)//每一秒执行一次 是一个channel
+		遍历或者使用的时候用 ticker.C
+	停止ticker.Stop()
+
+
+
+工作池实例：
+	我们将运行几个并发实例
+	func worker(id int,job <-chan int, results chan<- int){
+		for j:=range job{
+
+		}
+	}
+	//接受三个参数，一个int id 一个channel 接受job 过来的值。一个channel 存放 results的值
+	job := make(chan int,100)
 
 
 
